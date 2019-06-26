@@ -1,0 +1,145 @@
+Tasks:
+1. Create a Kubernetes cluster on GCP (GCP gives free credits on signup so those should suffice for this
+exercise). If possible share a script / code which can be used to create the cluster.
+Output: 
+Step1 : curl -sS https://get.k8s.io | bash
+cd kubernetes
+cluster/kube-up.sh
+***************************************************************************************************************************************
+
+root@LAPTOP-TMBJEORH:~# kubectl get no
+NAME                           STATUS                     AGE       VERSION
+kubernetes-master              Ready,SchedulingDisabled   8h        v1.14.3
+kubernetes-minion-group-n9j0   Ready                      8h        v1.14.3
+kubernetes-minion-group-qml5   Ready                      8h        v1.14.3
+kubernetes-minion-group-x6ht   Ready                      8h        v1.14.3
+***************************************************************************************************************************************
+root@LAPTOP-TMBJEORH:~# kubectl get po --all-namespaces
+NAMESPACE       NAME                                        READY     STATUS    RESTARTS   AGE
+kube-system     coredns-5b969f4c88-gv5vr                    1/1       Running   0          8h
+kube-system     coredns-5b969f4c88-t59zq                    1/1       Running   0          8h
+kube-system     etcd-empty-dir-cleanup-kubernetes-master    1/1       Running   0          8h
+kube-system     etcd-server-events-kubernetes-master        1/1       Running   0          8h
+kube-system     etcd-server-kubernetes-master               1/1       Running   0          8h
+kube-system     event-exporter-v0.2.4-565cfffc57-tpfw5      1/1       Running   0          8h
+kube-system     fluentd-gcp-scaler-6965bb45c9-gkdth         1/1       Running   0          8h
+kube-system     fluentd-gcp-v3.2.0-676sp                    1/1       Running   0          8h
+kube-system     fluentd-gcp-v3.2.0-6jg5d                    1/1       Running   0          8h
+kube-system     fluentd-gcp-v3.2.0-ctkrf                    1/1       Running   0          8h
+kube-system     fluentd-gcp-v3.2.0-l5hvm                    1/1       Running   0          8h
+kube-system     heapster-v1.6.0-beta.1-7b59fcb475-kfzbc     2/2       Running   0          8h
+kube-system     kube-addon-manager-kubernetes-master        1/1       Running   0          8h
+kube-system     kube-apiserver-kubernetes-master            1/1       Running   1          8h
+kube-system     kube-controller-manager-kubernetes-master   1/1       Running   0          8h
+kube-system     kube-dns-autoscaler-97df449df-cg8km         1/1       Running   0          8h
+kube-system     kube-proxy-kubernetes-minion-group-n9j0     1/1       Running   0          8h
+kube-system     kube-proxy-kubernetes-minion-group-qml5     1/1       Running   0          8h
+kube-system     kube-proxy-kubernetes-minion-group-x6ht     1/1       Running   0          8h
+kube-system     kube-scheduler-kubernetes-master            1/1       Running   0          8h
+kube-system     kubernetes-dashboard-85bcf5dbf8-kthlx       1/1       Running   0          8h
+kube-system     l7-default-backend-8f479dd9-rct6k           1/1       Running   0          8h
+kube-system     l7-lb-controller-v1.2.3-kubernetes-master   1/1       Running   0          8h
+kube-system     metrics-server-v0.3.1-9576c549b-f7xvr       2/2       Running   0          8h
+nginx-ingress   nginx-ingress-6n6xh                         0/1       Pending   0          6h
+nginx-ingress   nginx-ingress-8j6tn                         1/1       Running   0          6h
+nginx-ingress   nginx-ingress-cp9gh                         1/1       Running   0          6h
+nginx-ingress   nginx-ingress-kdg8g                         1/1       Running   0          6h
+production      frontend-69859f6796-mckc5                   1/1       Running   0          47m
+production      load-generator-7fbcc7489f-pvl95             1/1       Running   1          20m
+production      redis-master-596696dd4-54lbt                1/1       Running   0          49m
+production      redis-slave-96685cfdb-hkr7b                 1/1       Running   0          47m
+production      redis-slave-96685cfdb-m2kb9                 1/1       Running   0          47m
+staging         frontend-69859f6796-4q6gn                   1/1       Running   0          3h
+staging         frontend-69859f6796-9hffj                   1/1       Running   0          3h
+staging         frontend-69859f6796-kbfsv                   1/1       Running   0          3h
+staging         redis-master-596696dd4-m5l79                1/1       Running   0          3h
+staging         redis-slave-96685cfdb-mvxxn                 1/1       Running   0          3h
+staging         redis-slave-96685cfdb-pr7ds                 1/1       Running   0          3h
+root@LAPTOP-TMBJEORH:~#
+***************************************************************************************************************************************
+
+
+2. Install nginx ingress controller on the cluster. For now, we consider that the user will add public IP of
+ingress LoadBalancer to their /etc/hosts file for all hostnames to be used. So do not worry about DNS
+resolution.
+
+root@LAPTOP-TMBJEORH:~# kubectl config use-context nginx
+Switched to context "nginx".
+root@LAPTOP-TMBJEORH:~# kubectl get po
+NAME                  READY     STATUS    RESTARTS   AGE
+nginx-ingress-6n6xh   0/1       Pending   0          6h
+nginx-ingress-8j6tn   1/1       Running   0          6h
+nginx-ingress-cp9gh   1/1       Running   0          6h
+nginx-ingress-kdg8g   1/1       Running   0          6h
+root@LAPTOP-TMBJEORH:~#
+
+Note: I'm not getting how to accomplish this task (user will add public IP of
+ingress LoadBalancer to their /etc/hosts file for all hostnames to be used)
+***************************************************************************************************************************************
+3. On this cluster, create namespaces called staging and production.
+root@LAPTOP-TMBJEORH:~# kubectl get ns
+NAME              STATUS    AGE
+default           Active    8h
+kube-node-lease   Active    8h
+kube-public       Active    8h
+kube-system       Active    8h
+nginx-ingress     Active    6h
+production        Active    4h
+staging           Active    4h
+***************************************************************************************************************************************
+4. Install guest-book application on both namespaces.
+On Staging Namespace
+staging         frontend-69859f6796-4q6gn                   1/1       Running   0          3h
+staging         frontend-69859f6796-9hffj                   1/1       Running   0          3h
+staging         frontend-69859f6796-kbfsv                   1/1       Running   0          3h
+staging         redis-master-596696dd4-m5l79                1/1       Running   0          4h
+staging         redis-slave-96685cfdb-mvxxn                 1/1       Running   0          4h
+staging         redis-slave-96685cfdb-pr7ds                 1/1       Running   0          4h
+root@LAPTOP-TMBJEORH:~#
+
+On production Namespace
+
+production      frontend-69859f6796-mckc5                   1/1       Running   0          1h
+production      load-generator-7fbcc7489f-pvl95             1/1       Running   1          48m
+production      redis-master-596696dd4-54lbt                1/1       Running   0          1h
+production      redis-slave-96685cfdb-hkr7b                 1/1       Running   0          1h
+production      redis-slave-96685cfdb-m2kb9                 1/1       Running   0          1h
+***************************************************************************************************************************************
+5. Expose staging application on hostname staging-guestbook.mstakx.io
+Guestbook 
+http://35.202.0.51/
+
+6. Expose production application on hostname guestbook.mstakx.io
+
+http://35.188.184.113/
+7. Implement a pod autoscaler on both namespaces which will scale frontend pod replicas up and down
+based on CPU utilization of pods.
+
+kubectl autoscale deployment frontend --cpu-percent=90 --min=1 --max=10
+
+root@LAPTOP-TMBJEORH:~# kubectl get hpa
+NAME       REFERENCE             TARGETS    MINPODS   MAXPODS   REPLICAS   AGE
+frontend   Deployment/frontend   2% / 90%   1         10        1          1h
+8. Write a script which will demonstrate how the pods are scaling up and down by increasing/decreasing load
+on existing pods.
+9. Write a wrapper script which does all the steps above. Mention any pre-requisites in the README.md at
+the root of your repo.
+
+
+In the context of above test, please explain the following:
+• What was the node size chosen for the Kubernetes nodes? And why?
+
+The size of the machine is 
+Type n1-standard-2 
+Cores: 2 vCPUs, Memory 7.5 GB memory
+Disk Size : 100 GB
+
+The reason for me to choose this node size is because if user is not user PVC than there will be tempfs storage use by the pods which will eat by node storage , if less disk space is used than we might run into disk space problem.
+• What method was chosen to install the demo application and ingress controller on the cluster, justify the
+method used
+I had used the yaml file to create the deployments and service . This methods is traditional approach whcih can be replaced by github to keep version of different yml files. 
+
+• What would be your chosen solution to monitor the application on the cluster and why?
+I haven't installed prometheus or any other monitoring solution to this current cluster. 
+• What additional components / plugins would you install on the cluster to manage it better?
+We can install monitoring solution like prometheus and nagios to monitor workload and underline infrastructure. 
